@@ -100,7 +100,7 @@
 RD /s/q $(TargetDir)\Licenses\
 MD $(TargetDir)\Licenses\
 COPY /Y $(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt $(TargetDir)\Licenses\
-"C:\Program Files\7-Zip\7z" a "$(TargetDir)$(TargetName)_X.X.X.X.zip" "$(TargetDir)$(TargetName).exe" "$(TargetDir)*.dll" "$(TargetDir)Licenses" "$(TargetDir)images" -tzip -mx5</PostBuildEvent>
+"C:\Program Files\7-Zip\7z" a "$(TargetDir)$(TargetName)_X.X.X.X.zip" "$(TargetDir)$(TargetName).exe" "$(TargetDir)*.dll" "$(TargetDir)Licenses" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" -tzip -mx5</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
