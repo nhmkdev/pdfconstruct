@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -93,34 +94,6 @@ namespace PdfConstruct
             m_zExportThread.Start(listFiles);
         }
 
-        private void ExportThread(object zParam)
-        {
-            var zDocument = new PdfDocument();
-
-            List<string> listFiles = (List<string>) zParam;
-            Func<decimal> funcGetDpi = () => numericDPI.Value;
-            Func<string> funcGetOutputPath = () => txtOutputPath.Text;
-
-            var dDPI = (double) numericDPI.InvokeFunc(funcGetDpi);
-            var sOutputPth = txtOutputPath.InvokeFunc(funcGetOutputPath);
-
-            listFiles.ForEach(sFile =>
-            {
-                var zImg = Image.FromFile(sFile);
-                var zPage = zDocument.AddPage(new PdfPage()
-                {
-                    Width = XUnit.FromInch((double)zImg.Width / dDPI),
-                    Height = XUnit.FromInch((double)zImg.Height / dDPI)
-                });
-                var zGfx = XGraphics.FromPdfPage(zPage);
-                zGfx.DrawImage(XImage.FromGdiPlusImage(zImg), Point.Empty);
-                progressBar.InvokeAction(() => progressBar.Value++);
-            });
-            zDocument.Save(sOutputPth);
-            ConfigureControlState(false);
-            m_zExportThread = null;
-        }
-
         private void addEntriesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var arrayFiles = GetImageFiles(true);
@@ -128,9 +101,30 @@ namespace PdfConstruct
             {
                 return;
             }
+            var nTargetIndex = listViewCards.Items.Count;
+
             foreach (var sFile in arrayFiles)
             {
-                AddCardRow(sFile, string.Empty, 1);
+                AddCardRow(sFile, string.Empty, 1, nTargetIndex);
+                nTargetIndex++;
+            }
+            MarkDirty();
+        }
+
+
+        private void insertNewEntriesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var arrayFiles = GetImageFiles(true);
+            if (arrayFiles == null || arrayFiles.Length == 0)
+            {
+                return;
+            }
+            var nTargetIndex = listViewCards.SelectedIndices.Count == 0 ? listViewCards.Items.Count : listViewCards.SelectedIndices[0];
+
+            foreach (var sFile in arrayFiles)
+            {
+                AddCardRow(sFile, string.Empty, 1, nTargetIndex);
+                nTargetIndex++;
             }
             MarkDirty();
         }
@@ -208,20 +202,89 @@ namespace PdfConstruct
             MarkDirty();
         }
 
+        private void btnMoveDown_Click(object sender, EventArgs e)
+        {
+            ListViewAssist.MoveListViewItems(listViewCards, 1);
+        }
+
+        private void btnMoveUp_Click(object sender, EventArgs e)
+        {
+            ListViewAssist.MoveListViewItems(listViewCards, -1);
+        }
+
+        private void listViewCards_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Shift)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Up:
+                        btnMoveUp_Click(sender, e);
+                        e.Handled = true; // block the up action
+                        break;
+                    case Keys.Down:
+                        btnMoveDown_Click(sender, e);
+                        e.Handled = true; // block the down action
+                        break;
+                }
+            }
+        }
+
         #endregion
 
-        #region Support Methods
+        #region Export Thread
+
+        private void ExportThread(object zParam)
+        {
+            var zDocument = new PdfDocument();
+
+            List<string> listFiles = (List<string>)zParam;
+            Func<decimal> funcGetDpi = () => numericDPI.Value;
+            Func<string> funcGetOutputPath = () => txtOutputPath.Text;
+
+            var dDPI = (double)numericDPI.InvokeFunc(funcGetDpi);
+            var sOutputPth = txtOutputPath.InvokeFunc(funcGetOutputPath);
+
+            listFiles.ForEach(sFile =>
+            {
+                var zImgSrc = Image.FromFile(sFile);
+
+#if false
+                var zImgDestination = new Bitmap(zImgSrc.Width, zImgSrc.Height, PixelFormat.Format24bppRgb);
+                var zImageGfx = Graphics.FromImage(zImgDestination);
+                zImageGfx.Clear(Color.White);
+                zImageGfx.DrawImage(zImgSrc, 0, 0);
+                zImgSrc.Dispose();
+                zImgDestination.Save("C:\\tmp.bmp", ImageFormat.Bmp);
+                zImgDestination.Dispose();
+                zImgSrc = Image.FromFile("C:\\tmp.bmp");
+#endif
+                var zPage = zDocument.AddPage(new PdfPage()
+                {
+                    Width = XUnit.FromInch((double)zImgSrc.Width / dDPI),
+                    Height = XUnit.FromInch((double)zImgSrc.Height / dDPI)
+                });
+                var zGfx = XGraphics.FromPdfPage(zPage);
+                var zXImage = XImage.FromGdiPlusImage(zImgSrc);
+                zGfx.DrawImage(zXImage, Point.Empty);
+                progressBar.InvokeAction(() => progressBar.Value++);
+                zImgSrc.Dispose();
+            });
+            zDocument.Save(sOutputPth);
+            ConfigureControlState(false);
+            m_zExportThread = null;
+        }
+
+#endregion
+
+
+#region Support Methods
 
         private void ConfigureControlState(bool bExporting)
         {
             progressBar.InvokeAction(() => progressBar.Visible = bExporting);
             btnExportPdf.InvokeAction(() => btnExportPdf.Text = bExporting ? "Cancel" : "Export PDF");
             groupBoxSetup.InvokeAction(() => groupBoxSetup.Enabled = !bExporting);
-        }
-
-        private int GetDPI()
-        {
-            return (int)numericDPI.Value;
         }
 
         private List<string> GetFilesList()
@@ -253,10 +316,10 @@ namespace PdfConstruct
             return listFiles;
         }
 
-        private void AddCardRow(string sFront, string sBack, int nCount)
+        private void AddCardRow(string sFront, string sBack, int nCount, int nTargetIndex)
         {
             var lvItem = new ListViewItem(new string[] { sFront, sBack, nCount.ToString()});
-            listViewCards.Items.Add(lvItem);
+            listViewCards.Items.Insert(nTargetIndex, lvItem);
         }
 
         private void SetSelectedItemsValue(ListView.SelectedListViewItemCollection listItems, string sValue, ItemSubIndex eIndex)
@@ -279,9 +342,9 @@ namespace PdfConstruct
             return DialogResult.OK == ofd.ShowDialog(this) ? ofd.FileNames : null;
         }
 
-        #endregion
+#endregion
 
-        #region AbstractDirtyForm
+#region AbstractDirtyForm
 
         protected override bool OpenFormData(string sFileName)
         {
@@ -291,9 +354,11 @@ namespace PdfConstruct
                 listViewCards.Items.Clear();
                 numericDPI.Value = zConstruct.DPI;
                 txtOutputPath.Text = zConstruct.OutputPath;
+                var nTargetIndex = 0;
                 zConstruct.CardEntries.ForEach(e =>
                 {
-                    AddCardRow(e.Front, e.Back, e.Count);
+                    AddCardRow(e.Front, e.Back, e.Count, nTargetIndex);
+                    nTargetIndex++;
                 });
                 MarkClean();
                 return true;
@@ -322,6 +387,7 @@ namespace PdfConstruct
             return SerializationUtils.SerializeToXmlFile(sFileName, zConstruct, Encoding.UTF8);
         }
 
-        #endregion
+#endregion
+
     }
 }

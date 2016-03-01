@@ -1,4 +1,7 @@
 PdfConstruct Version History
 --------------------------
+0.0.0.2
+- Added movement buttons and shortcuts (Shift+up/down) for adjusting the order (supports multi-select moves)
+
 0.0.0.1
 - Initial Version

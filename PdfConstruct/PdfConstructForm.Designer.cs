@@ -22,6 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
+using Support.UI;
+
 namespace PdfConstruct
 {
     partial class PdfConstructForm
@@ -53,7 +55,7 @@ namespace PdfConstruct
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.listViewCards = new System.Windows.Forms.ListView();
+            this.listViewCards = new Support.UI.ListViewDoubleBuffered();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -74,6 +76,8 @@ namespace PdfConstruct
             this.label1 = new System.Windows.Forms.Label();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.groupBoxSetup = new System.Windows.Forms.GroupBox();
+            this.btnMoveUp = new System.Windows.Forms.Button();
+            this.btnMoveDown = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.numericDPI = new System.Windows.Forms.NumericUpDown();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
@@ -83,6 +87,7 @@ namespace PdfConstruct
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.insertNewEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripFaces.SuspendLayout();
             this.groupBoxSetup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericDPI)).BeginInit();
@@ -101,12 +106,14 @@ namespace PdfConstruct
             this.listViewCards.ContextMenuStrip = this.contextMenuStripFaces;
             this.listViewCards.FullRowSelect = true;
             this.listViewCards.GridLines = true;
+            this.listViewCards.HideSelection = false;
             this.listViewCards.Location = new System.Drawing.Point(6, 71);
             this.listViewCards.Name = "listViewCards";
             this.listViewCards.Size = new System.Drawing.Size(862, 413);
             this.listViewCards.TabIndex = 0;
             this.listViewCards.UseCompatibleStateImageBehavior = false;
             this.listViewCards.View = System.Windows.Forms.View.Details;
+            this.listViewCards.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewCards_KeyDown);
             this.listViewCards.Resize += new System.EventHandler(this.listViewCards_Resize);
             // 
             // columnHeader1
@@ -127,6 +134,7 @@ namespace PdfConstruct
             // 
             this.contextMenuStripFaces.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addEntriesToolStripMenuItem,
+            this.insertNewEntriesToolStripMenuItem,
             this.toolStripMenuItem1,
             this.selectCardFrontsToolStripMenuItem,
             this.selectCardBacksToolStripMenuItem,
@@ -138,69 +146,69 @@ namespace PdfConstruct
             this.deleteRowToolStripMenuItem});
             this.contextMenuStripFaces.Name = "contextMenuStripFaces";
             this.contextMenuStripFaces.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripFaces.Size = new System.Drawing.Size(174, 176);
+            this.contextMenuStripFaces.Size = new System.Drawing.Size(176, 220);
             // 
             // addEntriesToolStripMenuItem
             // 
             this.addEntriesToolStripMenuItem.Name = "addEntriesToolStripMenuItem";
-            this.addEntriesToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.addEntriesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.addEntriesToolStripMenuItem.Text = "Add New Entries...";
             this.addEntriesToolStripMenuItem.Click += new System.EventHandler(this.addEntriesToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(170, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(172, 6);
             // 
             // selectCardFrontsToolStripMenuItem
             // 
             this.selectCardFrontsToolStripMenuItem.Name = "selectCardFrontsToolStripMenuItem";
-            this.selectCardFrontsToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.selectCardFrontsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.selectCardFrontsToolStripMenuItem.Text = "Set Card Front(s)...";
             this.selectCardFrontsToolStripMenuItem.Click += new System.EventHandler(this.selectCardFacesToolStripMenuItem_Click);
             // 
             // selectCardBacksToolStripMenuItem
             // 
             this.selectCardBacksToolStripMenuItem.Name = "selectCardBacksToolStripMenuItem";
-            this.selectCardBacksToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.selectCardBacksToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.selectCardBacksToolStripMenuItem.Text = "Set Card Back(s)...";
             this.selectCardBacksToolStripMenuItem.Click += new System.EventHandler(this.selectCardFacesToolStripMenuItem_Click);
             // 
             // setCardCountsToolStripMenuItem
             // 
             this.setCardCountsToolStripMenuItem.Name = "setCardCountsToolStripMenuItem";
-            this.setCardCountsToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.setCardCountsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.setCardCountsToolStripMenuItem.Text = "Set Card Count(s)...";
             this.setCardCountsToolStripMenuItem.Click += new System.EventHandler(this.setCardCountsToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(170, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(172, 6);
             // 
             // clearCardFrontsToolStripMenuItem
             // 
             this.clearCardFrontsToolStripMenuItem.Name = "clearCardFrontsToolStripMenuItem";
-            this.clearCardFrontsToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.clearCardFrontsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.clearCardFrontsToolStripMenuItem.Text = "Clear Card Front(s)";
             this.clearCardFrontsToolStripMenuItem.Click += new System.EventHandler(this.clearCardFacesToolStripMenuItem_Click);
             // 
             // clearCardBacksToolStripMenuItem
             // 
             this.clearCardBacksToolStripMenuItem.Name = "clearCardBacksToolStripMenuItem";
-            this.clearCardBacksToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.clearCardBacksToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.clearCardBacksToolStripMenuItem.Text = "Clear Card Back(s)";
             this.clearCardBacksToolStripMenuItem.Click += new System.EventHandler(this.clearCardFacesToolStripMenuItem_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(170, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(172, 6);
             // 
             // deleteRowToolStripMenuItem
             // 
             this.deleteRowToolStripMenuItem.Name = "deleteRowToolStripMenuItem";
-            this.deleteRowToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.deleteRowToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.deleteRowToolStripMenuItem.Text = "Delete Row(s)...";
             this.deleteRowToolStripMenuItem.Click += new System.EventHandler(this.deleteRowsToolStripMenuItem_Click);
             // 
@@ -258,6 +266,8 @@ namespace PdfConstruct
             this.groupBoxSetup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxSetup.Controls.Add(this.btnMoveUp);
+            this.groupBoxSetup.Controls.Add(this.btnMoveDown);
             this.groupBoxSetup.Controls.Add(this.label2);
             this.groupBoxSetup.Controls.Add(this.numericDPI);
             this.groupBoxSetup.Controls.Add(this.listViewCards);
@@ -270,6 +280,28 @@ namespace PdfConstruct
             this.groupBoxSetup.TabIndex = 6;
             this.groupBoxSetup.TabStop = false;
             this.groupBoxSetup.Text = "Setup";
+            // 
+            // btnMoveUp
+            // 
+            this.btnMoveUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMoveUp.Location = new System.Drawing.Point(694, 45);
+            this.btnMoveUp.Name = "btnMoveUp";
+            this.btnMoveUp.Size = new System.Drawing.Size(84, 20);
+            this.btnMoveUp.TabIndex = 8;
+            this.btnMoveUp.Text = "Move Up";
+            this.btnMoveUp.UseVisualStyleBackColor = true;
+            this.btnMoveUp.Click += new System.EventHandler(this.btnMoveUp_Click);
+            // 
+            // btnMoveDown
+            // 
+            this.btnMoveDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMoveDown.Location = new System.Drawing.Point(784, 45);
+            this.btnMoveDown.Name = "btnMoveDown";
+            this.btnMoveDown.Size = new System.Drawing.Size(84, 20);
+            this.btnMoveDown.TabIndex = 7;
+            this.btnMoveDown.Text = "Move Down";
+            this.btnMoveDown.UseVisualStyleBackColor = true;
+            this.btnMoveDown.Click += new System.EventHandler(this.btnMoveDown_Click);
             // 
             // label2
             // 
@@ -360,6 +392,13 @@ namespace PdfConstruct
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.closeToolStripMenuItem.Text = "Close";
             // 
+            // insertNewEntriesToolStripMenuItem
+            // 
+            this.insertNewEntriesToolStripMenuItem.Name = "insertNewEntriesToolStripMenuItem";
+            this.insertNewEntriesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.insertNewEntriesToolStripMenuItem.Text = "Insert New Entries...";
+            this.insertNewEntriesToolStripMenuItem.Click += new System.EventHandler(this.insertNewEntriesToolStripMenuItem_Click);
+            // 
             // PdfConstructForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -386,8 +425,6 @@ namespace PdfConstruct
         }
 
         #endregion
-
-        private System.Windows.Forms.ListView listViewCards;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.Button btnExportPdf;
@@ -417,6 +454,10 @@ namespace PdfConstruct
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
+        private System.Windows.Forms.Button btnMoveUp;
+        private System.Windows.Forms.Button btnMoveDown;
+        private System.Windows.Forms.ToolStripMenuItem insertNewEntriesToolStripMenuItem;
+        private ListViewDoubleBuffered listViewCards;
     }
 }
 

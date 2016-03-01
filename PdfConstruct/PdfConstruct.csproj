@@ -66,6 +66,9 @@
     </Compile>
     <Compile Include="Support\UI\Extensions.cs" />
     <Compile Include="Support\UI\ListViewAssist.cs" />
+    <Compile Include="Support\UI\ListViewDoubleBuffer.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Support\UI\QueryPanel.cs" />
     <Compile Include="Support\UI\QueryPanelDialog.cs" />
     <EmbeddedResource Include="PdfConstructForm.resx">
