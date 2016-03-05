@@ -2,6 +2,7 @@ PdfConstruct Version History
 --------------------------
 0.0.0.2
 - Added movement buttons and shortcuts (Shift+up/down) for adjusting the order (supports multi-select moves)
+- Updated PDFSharp version to 1.5beta3 to work around Acrobat transparency issue relating to PDF/X-1a conversion
 
 0.0.0.1
 - Initial Version
