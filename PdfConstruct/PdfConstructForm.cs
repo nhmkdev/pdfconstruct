@@ -26,12 +26,16 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using PdfConstruct.DataObjects;
+using PdfConstruct.Properties;
 using PdfSharp.Pdf;
 using PdfSharp.Drawing;
+using PdfSharp.Pdf.Advanced;
 using Support.IO;
 using Support.UI;
 
@@ -237,8 +241,10 @@ namespace PdfConstruct
         private void ExportThread(object zParam)
         {
             var zDocument = new PdfDocument();
+            zDocument.Options.ColorMode = PdfColorMode.Undefined;
+            //zDocument.Options.NoCompression = true;
 
-            List<string> listFiles = (List<string>)zParam;
+            var listFiles = (List<string>)zParam;
             Func<decimal> funcGetDpi = () => numericDPI.Value;
             Func<string> funcGetOutputPath = () => txtOutputPath.Text;
 
@@ -249,26 +255,28 @@ namespace PdfConstruct
             {
                 var zImgSrc = Image.FromFile(sFile);
 
-#if false
+                // wipe out any transparency on the images
                 var zImgDestination = new Bitmap(zImgSrc.Width, zImgSrc.Height, PixelFormat.Format24bppRgb);
                 var zImageGfx = Graphics.FromImage(zImgDestination);
                 zImageGfx.Clear(Color.White);
                 zImageGfx.DrawImage(zImgSrc, 0, 0);
-                zImgSrc.Dispose();
-                zImgDestination.Save("C:\\tmp.bmp", ImageFormat.Bmp);
-                zImgDestination.Dispose();
-                zImgSrc = Image.FromFile("C:\\tmp.bmp");
-#endif
+
                 var zPage = zDocument.AddPage(new PdfPage()
                 {
                     Width = XUnit.FromInch((double)zImgSrc.Width / dDPI),
                     Height = XUnit.FromInch((double)zImgSrc.Height / dDPI)
                 });
                 var zGfx = XGraphics.FromPdfPage(zPage);
-                var zXImage = XImage.FromGdiPlusImage(zImgSrc);
-                zGfx.DrawImage(zXImage, Point.Empty);
-                progressBar.InvokeAction(() => progressBar.Value++);
+                using (var zMem = new MemoryStream())
+                {
+                    zImgDestination.Save(zMem, ImageFormat.Bmp);
+                    var zXImage = XImage.FromStream(zMem);
+                    zGfx.DrawImage(zXImage, new XPoint());
+                    zXImage.Dispose();
+                }
+                zImgDestination.Dispose();
                 zImgSrc.Dispose();
+                progressBar.InvokeAction(() => progressBar.Value++);
             });
             zDocument.Save(sOutputPth);
             ConfigureControlState(false);
