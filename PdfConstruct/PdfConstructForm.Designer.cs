@@ -61,6 +61,7 @@ namespace PdfConstruct
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStripFaces = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.insertNewEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.selectCardFrontsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectCardBacksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,8 +79,6 @@ namespace PdfConstruct
             this.groupBoxSetup = new System.Windows.Forms.GroupBox();
             this.btnMoveUp = new System.Windows.Forms.Button();
             this.btnMoveDown = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.numericDPI = new System.Windows.Forms.NumericUpDown();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -87,10 +86,8 @@ namespace PdfConstruct
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.insertNewEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripFaces.SuspendLayout();
             this.groupBoxSetup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericDPI)).BeginInit();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -146,7 +143,7 @@ namespace PdfConstruct
             this.deleteRowToolStripMenuItem});
             this.contextMenuStripFaces.Name = "contextMenuStripFaces";
             this.contextMenuStripFaces.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStripFaces.Size = new System.Drawing.Size(176, 220);
+            this.contextMenuStripFaces.Size = new System.Drawing.Size(176, 198);
             // 
             // addEntriesToolStripMenuItem
             // 
@@ -154,6 +151,13 @@ namespace PdfConstruct
             this.addEntriesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.addEntriesToolStripMenuItem.Text = "Add New Entries...";
             this.addEntriesToolStripMenuItem.Click += new System.EventHandler(this.addEntriesToolStripMenuItem_Click);
+            // 
+            // insertNewEntriesToolStripMenuItem
+            // 
+            this.insertNewEntriesToolStripMenuItem.Name = "insertNewEntriesToolStripMenuItem";
+            this.insertNewEntriesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.insertNewEntriesToolStripMenuItem.Text = "Insert New Entries...";
+            this.insertNewEntriesToolStripMenuItem.Click += new System.EventHandler(this.insertNewEntriesToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -268,8 +272,6 @@ namespace PdfConstruct
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxSetup.Controls.Add(this.btnMoveUp);
             this.groupBoxSetup.Controls.Add(this.btnMoveDown);
-            this.groupBoxSetup.Controls.Add(this.label2);
-            this.groupBoxSetup.Controls.Add(this.numericDPI);
             this.groupBoxSetup.Controls.Add(this.listViewCards);
             this.groupBoxSetup.Controls.Add(this.btnBrowse);
             this.groupBoxSetup.Controls.Add(this.label1);
@@ -302,38 +304,6 @@ namespace PdfConstruct
             this.btnMoveDown.Text = "Move Down";
             this.btnMoveDown.UseVisualStyleBackColor = true;
             this.btnMoveDown.Click += new System.EventHandler(this.btnMoveDown_Click);
-            // 
-            // label2
-            // 
-            this.label2.Location = new System.Drawing.Point(6, 45);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(68, 20);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "DPI:";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // numericDPI
-            // 
-            this.numericDPI.Location = new System.Drawing.Point(80, 45);
-            this.numericDPI.Maximum = new decimal(new int[] {
-            65536,
-            0,
-            0,
-            0});
-            this.numericDPI.Minimum = new decimal(new int[] {
-            72,
-            0,
-            0,
-            0});
-            this.numericDPI.Name = "numericDPI";
-            this.numericDPI.Size = new System.Drawing.Size(79, 20);
-            this.numericDPI.TabIndex = 5;
-            this.numericDPI.Value = new decimal(new int[] {
-            300,
-            0,
-            0,
-            0});
-            this.numericDPI.ValueChanged += new System.EventHandler(this.numericDPI_ValueChanged);
             // 
             // menuStrip
             // 
@@ -392,13 +362,6 @@ namespace PdfConstruct
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.closeToolStripMenuItem.Text = "Close";
             // 
-            // insertNewEntriesToolStripMenuItem
-            // 
-            this.insertNewEntriesToolStripMenuItem.Name = "insertNewEntriesToolStripMenuItem";
-            this.insertNewEntriesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.insertNewEntriesToolStripMenuItem.Text = "Insert New Entries...";
-            this.insertNewEntriesToolStripMenuItem.Click += new System.EventHandler(this.insertNewEntriesToolStripMenuItem_Click);
-            // 
             // PdfConstructForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -412,11 +375,11 @@ namespace PdfConstruct
             this.MinimumSize = new System.Drawing.Size(500, 400);
             this.Name = "PdfConstructForm";
             this.Text = "PdfConstruct";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PdfConstructForm_FormClosing);
             this.Load += new System.EventHandler(this.PdfConstructForm_Load);
             this.contextMenuStripFaces.ResumeLayout(false);
             this.groupBoxSetup.ResumeLayout(false);
             this.groupBoxSetup.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericDPI)).EndInit();
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -440,8 +403,6 @@ namespace PdfConstruct
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.GroupBox groupBoxSetup;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.NumericUpDown numericDPI;
         private System.Windows.Forms.ToolStripMenuItem addEntriesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setCardCountsToolStripMenuItem;
         private System.Windows.Forms.ColumnHeader columnHeader3;

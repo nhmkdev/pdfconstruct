@@ -147,11 +147,12 @@ namespace PdfConstruct
         private void setCardCountsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var zQuery = new QueryPanelDialog("Set Card Count", 400, false);
-            zQuery.AddNumericBox("Count", 1, 0, int.MaxValue, 1, 0, numericDPI);
+            const string CARD_COUNT = "CARD_COUNT";
+            zQuery.AddNumericBox("Count", 1, 0, int.MaxValue, 1, 0, CARD_COUNT);
 
             if (DialogResult.OK == zQuery.ShowDialog(this))
             {
-                SetSelectedItemsValue(listViewCards.SelectedItems, zQuery.GetDecimal(numericDPI).ToString(), ItemSubIndex.Count);
+                SetSelectedItemsValue(listViewCards.SelectedItems, zQuery.GetDecimal(CARD_COUNT).ToString(), ItemSubIndex.Count);
             }
         }
 
@@ -234,6 +235,11 @@ namespace PdfConstruct
             }
         }
 
+        private void PdfConstructForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveOnClose(e);
+        }
+
         #endregion
 
         #region Export Thread
@@ -245,10 +251,8 @@ namespace PdfConstruct
             //zDocument.Options.NoCompression = true;
 
             var listFiles = (List<string>)zParam;
-            Func<decimal> funcGetDpi = () => numericDPI.Value;
             Func<string> funcGetOutputPath = () => txtOutputPath.Text;
 
-            var dDPI = (double)numericDPI.InvokeFunc(funcGetDpi);
             var sOutputPth = txtOutputPath.InvokeFunc(funcGetOutputPath);
 
             listFiles.ForEach(sFile =>
@@ -257,19 +261,23 @@ namespace PdfConstruct
 
                 // wipe out any transparency on the images
                 var zImgDestination = new Bitmap(zImgSrc.Width, zImgSrc.Height, PixelFormat.Format24bppRgb);
+                zImgDestination.SetResolution(zImgSrc.HorizontalResolution, zImgSrc.VerticalResolution);
+
                 var zImageGfx = Graphics.FromImage(zImgDestination);
                 zImageGfx.Clear(Color.White);
                 zImageGfx.DrawImage(zImgSrc, 0, 0);
 
                 var zPage = zDocument.AddPage(new PdfPage()
                 {
-                    Width = XUnit.FromInch((double)zImgSrc.Width / dDPI),
-                    Height = XUnit.FromInch((double)zImgSrc.Height / dDPI)
+                    Width = XUnit.FromInch((double)zImgSrc.Width / (double)zImgSrc.HorizontalResolution),
+                    Height = XUnit.FromInch((double)zImgSrc.Height / (double)zImgSrc.VerticalResolution)
                 });
                 var zGfx = XGraphics.FromPdfPage(zPage);
                 using (var zMem = new MemoryStream())
                 {
                     zImgDestination.Save(zMem, ImageFormat.Bmp);
+                    // just for testing
+                    //zImgDestination.Save("C:\\temp.bmp", ImageFormat.Bmp);
                     var zXImage = XImage.FromStream(zMem);
                     zGfx.DrawImage(zXImage, new XPoint());
                     zXImage.Dispose();
@@ -360,7 +368,6 @@ namespace PdfConstruct
             if (SerializationUtils.DeserializeFromXmlFile(sFileName, Encoding.UTF8, ref zConstruct))
             {
                 listViewCards.Items.Clear();
-                numericDPI.Value = zConstruct.DPI;
                 txtOutputPath.Text = zConstruct.OutputPath;
                 var nTargetIndex = 0;
                 zConstruct.CardEntries.ForEach(e =>
@@ -378,7 +385,6 @@ namespace PdfConstruct
         {
             var zConstruct = new Construct()
             {
-                DPI = (int) numericDPI.Value,
                 OutputPath = txtOutputPath.Text,
                 CardEntries = new List<CardEntry>(listViewCards.Items.Count)
             };
@@ -395,7 +401,6 @@ namespace PdfConstruct
             return SerializationUtils.SerializeToXmlFile(sFileName, zConstruct, Encoding.UTF8);
         }
 
-#endregion
-
+        #endregion
     }
 }

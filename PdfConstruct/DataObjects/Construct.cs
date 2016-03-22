@@ -28,7 +28,6 @@ namespace PdfConstruct.DataObjects
 {
     public class Construct
     {
-        public int DPI { get; set; }
         public string OutputPath { get; set; }
         public List<CardEntry> CardEntries { get; set; }
     }
