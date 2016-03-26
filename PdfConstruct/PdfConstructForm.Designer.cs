@@ -86,6 +86,7 @@ namespace PdfConstruct
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkBoxBacksFirst = new System.Windows.Forms.CheckBox();
             this.contextMenuStripFaces.SuspendLayout();
             this.groupBoxSetup.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -270,6 +271,7 @@ namespace PdfConstruct
             this.groupBoxSetup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxSetup.Controls.Add(this.checkBoxBacksFirst);
             this.groupBoxSetup.Controls.Add(this.btnMoveUp);
             this.groupBoxSetup.Controls.Add(this.btnMoveDown);
             this.groupBoxSetup.Controls.Add(this.listViewCards);
@@ -361,6 +363,17 @@ namespace PdfConstruct
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.closeToolStripMenuItem.Text = "Close";
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
+            // checkBoxBacksFirst
+            // 
+            this.checkBoxBacksFirst.AutoSize = true;
+            this.checkBoxBacksFirst.Location = new System.Drawing.Point(9, 45);
+            this.checkBoxBacksFirst.Name = "checkBoxBacksFirst";
+            this.checkBoxBacksFirst.Size = new System.Drawing.Size(111, 17);
+            this.checkBoxBacksFirst.TabIndex = 9;
+            this.checkBoxBacksFirst.Text = "Export Backs First";
+            this.checkBoxBacksFirst.UseVisualStyleBackColor = true;
             // 
             // PdfConstructForm
             // 
@@ -419,6 +432,7 @@ namespace PdfConstruct
         private System.Windows.Forms.Button btnMoveDown;
         private System.Windows.Forms.ToolStripMenuItem insertNewEntriesToolStripMenuItem;
         private ListViewDoubleBuffered listViewCards;
+        private System.Windows.Forms.CheckBox checkBoxBacksFirst;
     }
 }
 

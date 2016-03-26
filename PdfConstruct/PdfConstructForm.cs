@@ -217,6 +217,11 @@ namespace PdfConstruct
             ListViewAssist.MoveListViewItems(listViewCards, -1);
         }
 
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         private void listViewCards_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Shift)
@@ -317,16 +322,24 @@ namespace PdfConstruct
                     nCardCount = 0;
                 }
 
+                var listCardFaces = new List<string>();
+                if (!string.IsNullOrWhiteSpace(sCardFace))
+                {
+                    listCardFaces.Add(sCardFace);
+                }
+                if (!string.IsNullOrWhiteSpace(sCardBack))
+                {
+                    listCardFaces.Add(sCardBack);
+                }
+                if (checkBoxBacksFirst.Checked && 1 < listCardFaces.Count)
+                {
+                    listCardFaces.Insert(0, listCardFaces[1]);
+                    listCardFaces.RemoveAt(2);
+                }
+
                 for (var nCount = 0; nCount < nCardCount; nCount++)
                 {
-                    if (!string.IsNullOrWhiteSpace(sCardFace))
-                    {
-                        listFiles.Add(sCardFace);
-                    }
-                    if (!string.IsNullOrWhiteSpace(sCardBack))
-                    {
-                        listFiles.Add(sCardBack);
-                    }
+                    listFiles.AddRange(listCardFaces);
                 }
             }
             return listFiles;
