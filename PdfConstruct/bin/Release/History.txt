@@ -1,5 +1,9 @@
 PdfConstruct Version History
 --------------------------
+0.0.0.4
+- Fixed File > Close
+- Added export back first option
+
 0.0.0.3
 - Removed DPI option (image will provide this)
 - Added save on close detection
