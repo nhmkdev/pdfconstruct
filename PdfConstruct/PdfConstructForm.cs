@@ -32,6 +32,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using PdfConstruct.DataObjects;
+using PdfConstruct.Merge;
 using PdfConstruct.Properties;
 using PdfSharp.Pdf;
 using PdfSharp.Drawing;
@@ -47,6 +48,7 @@ namespace PdfConstruct
 
         private const string ALL_FILES_FILTER = "All files (*.*)|*.*";
         private const string INI_FILE = "PdfConstruct.ini";
+        private PDFMerge zPdfMerge = new PDFMerge();
 
         private enum ItemSubIndex
         {
@@ -59,6 +61,7 @@ namespace PdfConstruct
         {
             InitializeComponent();
             m_sFileOpenFilter = "PDFConstruct files (*.pc)|*.pc|All files (*.*)|*.*";
+            zPdfMerge.SetupPanel(panelPdfMerge);
         }
 
         #region Form Events
@@ -70,6 +73,17 @@ namespace PdfConstruct
 
         private void btnExportPdf_Click(object sender, EventArgs e)
         {
+            if (tabControl.SelectedIndex == 1)
+            {
+                if (string.IsNullOrWhiteSpace(txtOutputPath.Text))
+                {
+                    MessageBox.Show("Please specify an output path.");
+                    return;
+                }
+                zPdfMerge.SetupPDFMerge(txtOutputPath.Text);
+                return;
+            }
+
             if (m_zExportThread != null)
             {
                 m_zExportThread.Abort();

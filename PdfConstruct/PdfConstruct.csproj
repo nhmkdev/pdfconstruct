@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="DataObjects\CardEntry.cs" />
     <Compile Include="DataObjects\Construct.cs" />
+    <Compile Include="Merge\PDFMerge.cs" />
     <Compile Include="PdfConstructForm.cs">
       <SubType>Form</SubType>
     </Compile>

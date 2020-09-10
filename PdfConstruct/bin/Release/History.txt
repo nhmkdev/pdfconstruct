@@ -1,5 +1,8 @@
 PdfConstruct Version History
 --------------------------
+0.0.0.5
+- Added utility for PDF Interleave (can drag and drop files into text fields)
+
 0.0.0.4
 - Fixed File > Close
 - Added export back first option

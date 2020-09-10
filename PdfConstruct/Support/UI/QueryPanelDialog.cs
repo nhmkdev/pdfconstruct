@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2015 Tim Stair
+// Copyright (c) 2020 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,12 +36,9 @@ namespace Support.UI
         private int m_nMaxDesiredHeight = -1;
         private string m_sButtonPressed = string.Empty;
 
-        public Form Form
-        {
-            get { return m_zForm; }
-        }
+        public Form Form => m_zForm;
 
-		/// <summary>
+	    /// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="sTitle">Title of the dialog</param>
@@ -121,6 +118,7 @@ namespace Support.UI
 		    {
 		        Size = new Size(nWidth, 300)
 		    };
+
             Button btnDefault = null; // used to set the proper height of the internal panel
 
             // setup the buttons
@@ -150,14 +148,11 @@ namespace Support.UI
                 for (int nIdx = arrayButtons.Length - 1; nIdx > -1; nIdx--)
                 {
                     btnDefault = new Button();
-                    bool bHandlerSet = false;
-                    if (null != arrayHandlers)
+                    var bHandlerSet = false;
+                    if (arrayHandlers?[nIdx] != null)
                     {
-                        if (null != arrayHandlers[nIdx])
-                        {
-                            btnDefault.Click += arrayHandlers[nIdx];
-                            bHandlerSet = true;
-                        }
+                        btnDefault.Click += arrayHandlers[nIdx];
+                        bHandlerSet = true;
                     }
                     if (!bHandlerSet)
                     {
@@ -343,11 +338,17 @@ namespace Support.UI
                 }
                 if (nLargestHeight > 0)
                 {
-                    nLargestHeight = Math.Min(m_nMaxDesiredHeight, nLargestHeight);
+                    if (m_nMaxDesiredHeight > 0)
+                    {
+                        nLargestHeight = Math.Min(m_nMaxDesiredHeight, nLargestHeight);
+                    }
                     // hard coded extra vertical space
                     m_zForm.ClientSize = new Size(m_zForm.ClientSize.Width, nLargestHeight + 60);
                 }
             }
+
+            // add the panel controls after the client size has been set (adding them before displayed an odd issue with control anchor/size)
+		    FinalizeControls();
 
             if (0 < m_zPanel.Controls.Count)
             {
@@ -355,7 +356,7 @@ namespace Support.UI
             }
 		}
 
-		#endregion
+        #endregion
 
-	}
+    }
 }
