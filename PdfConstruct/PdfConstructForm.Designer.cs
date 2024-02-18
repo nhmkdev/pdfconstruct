@@ -438,7 +438,6 @@ namespace PdfConstruct
             this.MainMenuStrip = this.menuStrip;
             this.MinimumSize = new System.Drawing.Size(500, 400);
             this.Name = "PdfConstructForm";
-            this.Text = "PdfConstruct";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PdfConstructForm_FormClosing);
             this.Load += new System.EventHandler(this.PdfConstructForm_Load);
             this.contextMenuStripFaces.ResumeLayout(false);

@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PdfConstruct</RootNamespace>
     <AssemblyName>PdfConstruct</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,8 +34,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PdfSharp">
-      <HintPath>..\3rdParty\PDFsharp\GDI+\PdfSharp.dll</HintPath>
+    <Reference Include="PdfSharp-gdi, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-gdi.1.50.5147\lib\net20\PdfSharp-gdi.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting-gdi, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-gdi.1.50.5147\lib\net20\PdfSharp.Charting-gdi.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -83,7 +87,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -100,11 +106,16 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>DEL "$(SolutionDir)$(OutDir)*.zip"
-RD /s/q $(TargetDir)\Licenses\
-MD $(TargetDir)\Licenses\
-COPY /Y $(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt $(TargetDir)\Licenses\
-"C:\Program Files\7-Zip\7z" a "$(TargetDir)$(TargetName)_X.X.X.X.zip" "$(TargetDir)$(TargetName).exe" "$(TargetDir)*.dll" "$(TargetDir)Licenses" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" -tzip -mx5</PostBuildEvent>
+    <PostBuildEvent>IF $(ConfigurationName) == Release (
+    DEL "$(SolutionDir)$(OutDir)*.zip"
+    RD /s/q $(TargetDir)\Licenses\
+    MD $(TargetDir)\Licenses\
+    COPY /Y $(SolutionDir)\3rdParty\PDFSharp\PDFSharp-License.txt $(TargetDir)\Licenses\
+    "C:\Program Files\7-Zip\7z" a "$(TargetDir)$(TargetName)_X.X.X.X.zip" "$(TargetDir)$(TargetName).exe" "$(TargetDir)*.dll" "$(TargetDir)Licenses" "$(TargetDir)Readme.txt" "$(TargetDir)History.txt" -tzip -mx5
+) ELSE (
+  echo "Debug Build. Nothing to do!"
+)
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

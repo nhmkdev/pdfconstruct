@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // The MIT License (MIT)
 //
-// Copyright (c) 2015 Tim Stair
+// Copyright (c) 2024 Tim Stair
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,48 +29,45 @@ using System.Windows.Forms;
 
 namespace Support.UI
 {
-	/// <summary>
-	/// Handles Form "dirty/clean" states in relation to file loading / saving. Acts as
-	/// an abstract class, but is not. (forms & abstraction break the IDE in MSVS2003)
-	/// Be sure to override SaveFormData and OpenFormData
-	/// </summary>
-	//public abstract class AbstractDirtyForm
+    /// <summary>
+    /// Handles Form "dirty/clean" states in relation to file loading / saving. Acts as
+    /// an abstract class, but is not. (forms & abstraction break the IDE in MSVS2003)
+    /// Be sure to override SaveFormData and OpenFormData
+    /// </summary>
+    //public abstract class AbstractDirtyForm
 
-	public class AbstractDirtyForm : Form
-	{
+    public class AbstractDirtyForm : Form
+    {
         private string m_sCurrentDirectory = string.Empty;
-		protected string m_sBaseTitle = string.Empty;
-		protected string m_sLoadedFile = string.Empty;
-		protected string m_sFileOpenFilter = string.Empty;
+        protected string m_sBaseTitle = string.Empty;
+        protected string m_sLoadedFile = string.Empty;
+        protected string m_sFileOpenFilter = string.Empty;
 
-	    public string LoadedFile
-	    {
-	        get { return m_sLoadedFile; }
-	    }
+        public string LoadedFile => m_sLoadedFile;
 
-        protected bool Dirty { get; private set; }
+        public bool Dirty { get; private set; }
 
-		/// <summary>
-		/// This method should have an override that performs the save of the data to the file.
-		/// </summary>
-		/// <param name="sFileName">The file to save the data to</param>
-		/// <returns>true on success, false otherwise</returns>
-		protected virtual bool SaveFormData(string sFileName)
-		{
-			MessageBox.Show(this, "DEV Error: Please override AbstractDirtyForm.SaveFormData");
-			return false;
-		}
+        /// <summary>
+        /// This method should have an override that performs the save of the data to the file.
+        /// </summary>
+        /// <param name="sFileName">The file to save the data to</param>
+        /// <returns>true on success, false otherwise</returns>
+        protected virtual bool SaveFormData(string sFileName)
+        {
+            MessageBox.Show(this, "DEV Error: Please override AbstractDirtyForm.SaveFormData");
+            return false;
+        }
 
-		/// <summary>
-		/// This method should have an override that performs the load of the data from the file.
-		/// </summary>
-		/// <param name="sFileName">The file to load the data from</param>
-		/// <returns>true on success, false otherwise</returns>
-		protected virtual bool OpenFormData(string sFileName)
-		{
-			MessageBox.Show(this, "DEV Error: Please override AbstractDirtyForm.OpenFormData");
-			return false;
-		}
+        /// <summary>
+        /// This method should have an override that performs the load of the data from the file.
+        /// </summary>
+        /// <param name="sFileName">The file to load the data from</param>
+        /// <returns>true on success, false otherwise</returns>
+        protected virtual bool OpenFormData(string sFileName)
+        {
+            MessageBox.Show(this, "DEV Error: Please override AbstractDirtyForm.OpenFormData");
+            return false;
+        }
 
         /// <summary>
         /// Gets the current directory associated with the form
@@ -83,31 +80,31 @@ namespace Support.UI
             return Environment.CurrentDirectory;
         }
 
-		/// <summary>
-		/// Marks this form as dirty (needing save)
-		/// </summary>
-		public void MarkDirty()
-		{
-			if(!Dirty)
-			{
-				if(!Text.EndsWith("*"))
-					Text += " *";
+        /// <summary>
+        /// Marks this form as dirty (needing save)
+        /// </summary>
+        public void MarkDirty()
+        {
+            if (!Dirty)
+            {
+                if (!Text.EndsWith("*"))
+                    Text += " *";
 
                 Dirty = true;
-			}
-		}
+            }
+        }
 
-		/// <summary>
-		/// Marks this form as clean (save not needed)
-		/// </summary>
-		public void MarkClean()
-		{
+        /// <summary>
+        /// Marks this form as clean (save not needed)
+        /// </summary>
+        public void MarkClean()
+        {
             if (Dirty)
-			{
-				Text = Text.Replace("*", "").Trim();
+            {
+                Text = Text.Replace("*", "").Trim();
                 Dirty = false;
-			}
-		}
+            }
+        }
 
         /// <summary>
         /// Initializes a simple new file
@@ -119,23 +116,33 @@ namespace Support.UI
             MarkClean();
         }
 
-		/// <summary>
-		/// Initializes the Open process via the OpenFileDialog
-		/// </summary>
-		protected void InitOpen()
-		{
-		    var ofn = new OpenFileDialog
-		    {
-		        InitialDirectory = GetDialogDirectory(),
-                Filter = 0 == m_sFileOpenFilter.Length 
+        protected bool IsOpenCanceledByDirty()
+        {
+            // need to check if there is something to save
+            var cancelEventArgs = new CancelEventArgs();
+            SaveOnEvent(cancelEventArgs, true);
+            return cancelEventArgs.Cancel;
+        }
+
+        /// <summary>
+        /// Initializes the Open process via the OpenFileDialog
+        /// </summary>
+        public void InitOpen()
+        {
+            if (IsOpenCanceledByDirty()) return;
+
+            var ofn = new OpenFileDialog
+            {
+                InitialDirectory = GetDialogDirectory(),
+                Filter = 0 == m_sFileOpenFilter.Length
                     ? "All files (*.*)|*.*"
                     : m_sFileOpenFilter
-		    };
-            if(DialogResult.OK == ofn.ShowDialog(this))
-			{
+            };
+            if (DialogResult.OK == ofn.ShowDialog(this))
+            {
                 var sPath = Path.GetDirectoryName(ofn.FileName);
-			    if (null != sPath)
-			    {
+                if (null != sPath)
+                {
                     if (Directory.Exists(sPath))
                     {
                         m_sCurrentDirectory = sPath;
@@ -146,25 +153,27 @@ namespace Support.UI
                         }
                     }
 
-			    }
-			    MessageBox.Show(this, "Error opening [" + ofn.FileName + "] Wrong file type?", "File Open Error");
-			}
-		}
+                }
+                MessageBox.Show(this, "Error opening [" + ofn.FileName + "] Wrong file type?", "File Open Error");
+            }
+        }
 
-		/// <summary>
-		/// Initializes the open process with the file specified.
-		/// </summary>
-		/// <param name="sFileName">The file to open the data from</param>
-		/// <returns>true on success, false otherwise</returns>
-		protected bool InitOpen(string sFileName)
-		{
-			if(OpenFormData(sFileName))
-			{
+        /// <summary>
+        /// Initializes the open process with the file specified.
+        /// </summary>
+        /// <param name="sFileName">The file to open the data from</param>
+        /// <returns>true on success, false otherwise</returns>
+        public bool InitOpen(string sFileName)
+        {
+            if (IsOpenCanceledByDirty()) return false;
+
+            if (OpenFormData(sFileName))
+            {
                 SetLoadedFile(sFileName);
-				return true;
-			}
-			return false;
-		}
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Sets the currently loaded file and marks the state as clean
@@ -182,17 +191,17 @@ namespace Support.UI
         /// </summary>
         /// <param name="eArg"></param>
 		protected void SaveOnClose(CancelEventArgs eArg)
-		{
+        {
             SaveOnEvent(eArg, true);
-		}
+        }
 
         protected void SaveOnEvent(CancelEventArgs eArg, bool bAllowCancel)
         {
             if (Dirty)
             {
                 switch (MessageBox.Show(this, "Would you like to save any changes?",
-                    "Save", 
-                    (bAllowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo), 
+                    "Save",
+                    (bAllowCancel ? MessageBoxButtons.YesNoCancel : MessageBoxButtons.YesNo),
                     MessageBoxIcon.Question))
                 {
                     case DialogResult.Yes:
@@ -212,37 +221,37 @@ namespace Support.UI
         /// Initializes the Save / Save As dialog
         /// </summary>
         /// <param name="bForceSaveAs"></param>
-		protected void InitSave(bool bForceSaveAs)
-		{
+		public void InitSave(bool bForceSaveAs)
+        {
 
             if (string.IsNullOrEmpty(m_sLoadedFile) || bForceSaveAs)
             {
                 var sfn = new SaveFileDialog
                 {
                     InitialDirectory = GetDialogDirectory(),
-                    OverwritePrompt = true
+                    OverwritePrompt = true,
+                    Filter = 0 == m_sFileOpenFilter.Length
+                        ? "All files (*.*)|*.*"
+                        : m_sFileOpenFilter
                 };
-                sfn.Filter = 0 == m_sFileOpenFilter.Length
-                    ? "All files (*.*)|*.*"
-                    : m_sFileOpenFilter;
 
-			    if (DialogResult.OK == sfn.ShowDialog(this))
-			    {
-			        var sPath = Path.GetDirectoryName(sfn.FileName);
-			        if (null != sPath)
-			        {
-			            if (Directory.Exists(sPath))
-			            {
-			                m_sCurrentDirectory = sPath;
+                if (DialogResult.OK == sfn.ShowDialog(this))
+                {
+                    var sPath = Path.GetDirectoryName(sfn.FileName);
+                    if (null != sPath)
+                    {
+                        if (Directory.Exists(sPath))
+                        {
+                            m_sCurrentDirectory = sPath;
                             SetLoadedFile(sfn.FileName);
                         }
-			        }
-			    }
-			    else
-			    {
-			        return;
-			    }
-			}
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
             if (!SaveFormData(m_sLoadedFile))
             {
                 MessageBox.Show(this, "Error saving to file: " + m_sLoadedFile, "File Save Error",
@@ -252,6 +261,6 @@ namespace Support.UI
             {
                 MarkClean();
             }
-		}
-	}
+        }
+    }
 }

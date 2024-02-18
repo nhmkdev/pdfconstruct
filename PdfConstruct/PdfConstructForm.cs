@@ -62,6 +62,7 @@ namespace PdfConstruct
             InitializeComponent();
             m_sFileOpenFilter = "PDFConstruct files (*.pc)|*.pc|All files (*.*)|*.*";
             zPdfMerge.SetupPanel(panelPdfMerge);
+            m_sBaseTitle = "PDFConstruct " + Application.ProductVersion;
         }
 
         #region Form Events
@@ -69,6 +70,7 @@ namespace PdfConstruct
         private void PdfConstructForm_Load(object sender, EventArgs e)
         {
             ConfigureControlState(false);
+            InitNew();
         }
 
         private void btnExportPdf_Click(object sender, EventArgs e)
