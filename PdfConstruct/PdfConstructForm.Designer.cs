@@ -425,6 +425,7 @@ namespace PdfConstruct
             // 
             // PdfConstructForm
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1225, 700);
@@ -440,6 +441,8 @@ namespace PdfConstruct
             this.Name = "PdfConstructForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PdfConstructForm_FormClosing);
             this.Load += new System.EventHandler(this.PdfConstructForm_Load);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.PdfConstructForm_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.PdfConstructForm_DragEnter);
             this.contextMenuStripFaces.ResumeLayout(false);
             this.groupBoxSetup.ResumeLayout(false);
             this.groupBoxSetup.PerformLayout();

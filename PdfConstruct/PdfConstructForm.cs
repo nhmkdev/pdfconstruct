@@ -93,16 +93,27 @@ namespace PdfConstruct
                 m_zExportThread = null;
                 return;
             }
-            else
+
+            if (File.Exists(txtOutputPath.Text))
             {
-                if (string.IsNullOrWhiteSpace(txtOutputPath.Text))
+                try
                 {
-                    MessageBox.Show("Please specify an output path.");
+                    File.Delete(txtOutputPath.Text);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Failed to delete PDF before export: {0} Is the file open in another application?".FormatString(txtOutputPath.Text));
                     return;
                 }
-
-                ConfigureControlState(true);
             }
+
+            if (string.IsNullOrWhiteSpace(txtOutputPath.Text))
+            {
+                MessageBox.Show("Please specify an output path.");
+                return;
+            }
+
+            ConfigureControlState(true);
             var listFiles = GetFilesList();
 
             progressBar.Value = 0;
@@ -218,11 +229,6 @@ namespace PdfConstruct
             ListViewAssist.ResizeColumnHeaders(listViewCards);
         }
 
-        private void numericDPI_ValueChanged(object sender, EventArgs e)
-        {
-            MarkDirty();
-        }
-
         private void btnMoveDown_Click(object sender, EventArgs e)
         {
             ListViewAssist.MoveListViewItems(listViewCards, 1);
@@ -261,6 +267,27 @@ namespace PdfConstruct
             SaveOnClose(e);
         }
 
+        private void PdfConstructForm_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Copy;
+            else
+                e.Effect = DragDropEffects.None;
+        }
+
+        private void PdfConstructForm_DragDrop(object sender, DragEventArgs e)
+        {
+            var arrayFiles = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            var nTargetIndex = listViewCards.Items.Count;
+
+            foreach (var sFile in arrayFiles)
+            {
+                AddCardRow(sFile, string.Empty, 1, nTargetIndex);
+                nTargetIndex++;
+            }
+            MarkDirty();
+        }
+
         #endregion
 
         #region Export Thread
@@ -276,9 +303,26 @@ namespace PdfConstruct
 
             var sOutputPth = txtOutputPath.InvokeFunc(funcGetOutputPath);
 
-            listFiles.ForEach(sFile =>
+            foreach(var sFile in listFiles)
             {
-                var zImgSrc = Image.FromFile(sFile);
+                if (!File.Exists(sFile))
+                {
+                    MessageBox.Show("File does not exist: {0}".FormatString(sFile));
+                    ConfigureControlState(false);
+                    m_zExportThread = null;
+                    return;
+                }
+
+                Image zImgSrc;
+                try
+                {
+                    zImgSrc = Image.FromFile(sFile);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error loading image file: {0}\n\nIs this a valid image file?\n\nError: {1}".FormatString(sFile, ex.Message));
+                    return;
+                }
 
                 // wipe out any transparency on the images
                 var zImgDestination = new Bitmap(zImgSrc.Width, zImgSrc.Height, PixelFormat.Format24bppRgb);
@@ -306,16 +350,16 @@ namespace PdfConstruct
                 zImgDestination.Dispose();
                 zImgSrc.Dispose();
                 progressBar.InvokeAction(() => progressBar.Value++);
-            });
+            }
             zDocument.Save(sOutputPth);
             ConfigureControlState(false);
             m_zExportThread = null;
         }
 
-#endregion
+        #endregion
 
 
-#region Support Methods
+        #region Support Methods
 
         private void ConfigureControlState(bool bExporting)
         {
@@ -431,5 +475,6 @@ namespace PdfConstruct
         }
 
         #endregion
+
     }
 }
